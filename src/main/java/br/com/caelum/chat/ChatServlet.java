@@ -23,10 +23,6 @@ public class ChatServlet extends HttpServlet {
 	private BlockingQueue<String> messages = new LinkedBlockingQueue<String>();
 	private int contador;
 
-	static {
-		System.out.println("tomcat carregou?");
-	}
-
 	@Override
 	public void init() throws ServletException {
 		final ExecutorService executors = Executors.newCachedThreadPool();
@@ -38,9 +34,7 @@ public class ChatServlet extends HttpServlet {
 						final String message = messages.take();
 
 						for (final AsyncContext ctx : clients) {
-							
 							executors.execute(new Runnable() {
-								@Override
 								public void run() {
 									try {
 										if (ctx.getResponse().isCommitted()) {
@@ -71,11 +65,15 @@ public class ChatServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
-		System.out.println(Thread.currentThread());
-		System.out.println(req.isAsyncStarted());
 		AsyncContext ctx = req.startAsync();
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
 		messages.add(String.format("cliente %d chegou<br/>%n", contador++));
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse arg1)
+			throws ServletException, IOException {
+		messages.add(String.format("mensagem %n", contador++));
 	}
 }
