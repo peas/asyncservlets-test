@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = { "/chat/*" }, asyncSupported=true, loadOnStartup = 1)
+@WebServlet(urlPatterns = { "/subscribe" }, asyncSupported=true, loadOnStartup = 1)
 public class ChatServlet extends HttpServlet {
 
 	private Queue<AsyncContext> clients = new ConcurrentLinkedQueue<AsyncContext>();
