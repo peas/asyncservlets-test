@@ -33,42 +33,44 @@ repositories {
 	mavenCentral()
 	mavenRepo urls: 'http://repository.jboss.org/nexus/content/groups/public/'
 	mavenRepo urls: 'http://download.java.net/maven/2'
-	mavenRepo urls: 'http://webflange.sourceforge.net/maven'
 }
 
 dependencies {
 	tomcat ('org.apache.tomcat:tomcat-catalina:7.0.2') {transitive=false}
 	tomcat 'org.apache.tomcat.embed:tomcat-embed-core:7.0.2'
-	tomcat 'org.apache.tomcat:tomcat-jasper:7.0.2'
+	tomcat ('org.apache.tomcat:tomcat-jasper:7.0.2') {
+        	exclude group:'org.eclipse.jdt', name:'ecj',version:'3.6'
+	}
+	tomcat group:'org.eclipse.jdt.core.compiler', name:'ecj',version:'3.5.1'	
+
 	jetty 'org.mortbay.jetty:jetty-hightide:8.0.0.M1'
 	jetty 'org.slf4j:slf4j-jdk14:1.6.1'
-	grinder 'TheGrinder:grinder:3.0.1'
-        compile group: 'log4j', name: 'log4j', version: '1.2.+'
+
 	provided 'javax:javaee-web-api:6.0'
+
+        compile group: 'log4j', name: 'log4j', version: '1.2.+'
 	compile 'commons-httpclient:commons-httpclient:3.1'
 	compile group: 'org.hibernate', name: 'hibernate-core', version: '3.6.0.Beta2'
-		testCompile group: 'junit', name: 'junit', version: '4.+'
+	
+	testCompile group: 'junit', name: 'junit', version: '4.+'
 	testCompile group: 'org.mockito', name: 'mockito-all', version: '1.8.5'
 	testCompile group: 'org.hsqldb', name: 'hsqldb', version: '2.0.0'
+        
+	lib = "$projectDir/lib"
+        grinder files(fileTree(dir: lib as File, includes: ['*.jar']))
 }
 
-
-war {
-	exclude '**/javaee-web-api-6.0.jar'
-}
-task web(type: JavaExec, dependsOn: build) {
+task runJetty8(type: JavaExec, dependsOn: build) {
 	classpath configurations.jetty
 	classpath configurations.runtime
 	args '--ini=etc/start.ini'	
 	main = 'org.eclipse.jetty.start.Main'
-	//main = 'org.mortbay.jetty.start.Main'
 }
 
 
-task web2(type: JavaExec, dependsOn: build) {
+task runTomcat8(type: JavaExec, dependsOn: build) {
 	classpath configurations.tomcat
 	classpath configurations.runtime
-	//args '--ini=etc/start.ini'	
 	main = 'org.apache.catalina.startup.Bootstrap'
 }
 
@@ -77,5 +79,4 @@ task runGrinder(type: JavaExec, dependsOn: build) {
 	classpath configurations.runtime
 	args 'grainder/grinder.properties'
 	main = 'net.grinder.Grinder'	
-	main = 'org.apache.catalina.startup.Bootstrap'
 }
