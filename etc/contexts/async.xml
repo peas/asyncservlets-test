@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+
+<Configure id='xpto' class="org.eclipse.jetty.webapp.WebAppContext">
+
+	<Set name="contextPath">/chat</Set>
+	<Set name="war"><SystemProperty name="jetty.home" default="." />/build/libs/asyncservlets.war</Set>
+	<Set name="configurationDiscovered">true</Set>
+
+</Configure>
+  
+

@@ -1,0 +1,15 @@
+bin
+generated
+target
+*.class
+.gradle
+.classpath
+.project
+.settings
+.classpath.old
+build
+src/main/webapp/resources/crawled-images/*
+lucene/*
+logs/*
+work/*
+

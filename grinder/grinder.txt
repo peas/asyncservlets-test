@@ -1,0 +1,3 @@
+To run grinder: java -Xms1024m -Xmx1024m -cp path/to/grinder/lib/grinder.jar net.grinder.Grinder grinder.properties
+
+
