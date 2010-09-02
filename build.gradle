@@ -79,5 +79,9 @@ task runGrinder(type: JavaExec, dependsOn: build) {
 	classpath configurations.grinder
 	classpath configurations.runtime
 	args 'grinder/grinder.properties'
+	jvmArgs=['-Xmx800M']
+	println this
+	jvmArgs '-Xmx800M -Xss10K -BLA'
+	println jvmArgs
 	main = 'net.grinder.Grinder'	
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -16,12 +17,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = { "/subscribe" }, asyncSupported=true, loadOnStartup = 1)
+@WebServlet(urlPatterns = { "/subscribe" }, asyncSupported = true, loadOnStartup = 1)
 public class ChatServlet extends HttpServlet {
 
 	private Queue<AsyncContext> clients = new ConcurrentLinkedQueue<AsyncContext>();
 	private BlockingQueue<String> messages = new LinkedBlockingQueue<String>();
 	private int contador;
+	private AtomicInteger clientes = new AtomicInteger();
 
 	@Override
 	public void init() throws ServletException {
@@ -35,10 +37,10 @@ public class ChatServlet extends HttpServlet {
 						for (final AsyncContext ctx : clients) {
 							executors.execute(new Runnable() {
 								public void run() {
-									try {										
-										PrintWriter writer = ctx.getResponse().getWriter();
-										writer
-												.println(message);
+									try {
+										PrintWriter writer = ctx.getResponse()
+												.getWriter();
+										writer.println(message);
 										writer.flush();
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -62,13 +64,13 @@ public class ChatServlet extends HttpServlet {
 		AsyncContext ctx = req.startAsync();
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
-		messages.add(String.format("cliente %d chegou<br/>%n", contador++));
+		System.out.println("novo cliente " + clientes.incrementAndGet());
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
-		System.out.println("sending message");
-		messages.add(String.format("mensagem %n", contador++));
+		System.out.println("sending message para " + clientes);
+		messages.add(String.format("mensagem %d %n", contador));
 	}
 }
