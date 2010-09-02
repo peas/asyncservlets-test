@@ -68,7 +68,7 @@ task runJetty8(type: JavaExec, dependsOn: build) {
 }
 
 
-task runTomcat8(type: JavaExec, dependsOn: build) {
+task runTomcat7(type: JavaExec, dependsOn: build) {
 	classpath configurations.tomcat
 	classpath configurations.runtime
 	main = 'org.apache.catalina.startup.Bootstrap'
