@@ -27,7 +27,6 @@ public class ChatServlet extends HttpServlet {
 	public void init() throws ServletException {
 		final ExecutorService executors = Executors.newCachedThreadPool();
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
-			@Override
 			public void run() {
 				while (true) {
 					try {
@@ -36,16 +35,11 @@ public class ChatServlet extends HttpServlet {
 						for (final AsyncContext ctx : clients) {
 							executors.execute(new Runnable() {
 								public void run() {
-									try {
-										if (ctx.getResponse().isCommitted()) {
-											System.out.println("headers enviados ja");
-										}
-										System.out.println(ctx);
-										
+									try {										
 										PrintWriter writer = ctx.getResponse().getWriter();
 										writer
 												.println(message);
-										//writer.flush();
+										writer.flush();
 									} catch (IOException e) {
 										e.printStackTrace();
 									}
@@ -72,8 +66,9 @@ public class ChatServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPut(HttpServletRequest req, HttpServletResponse arg1)
+	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
+		System.out.println("sending message");
 		messages.add(String.format("mensagem %n", contador++));
 	}
 }

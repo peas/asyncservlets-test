@@ -26,7 +26,6 @@ sourceSets {
 	main {
 		compileClasspath += configurations.provided
 	}
-
 }
 
 repositories {
@@ -46,7 +45,9 @@ dependencies {
 	jetty 'org.mortbay.jetty:jetty-hightide:8.0.0.M1'
 	jetty 'org.slf4j:slf4j-jdk14:1.6.1'
 
+	// to generate the eclipse classpath, you need it to be compile group
 	provided 'javax:javaee-web-api:6.0'
+	//compile 'javax:javaee-web-api:6.0'
 
         compile group: 'log4j', name: 'log4j', version: '1.2.+'
 	compile 'commons-httpclient:commons-httpclient:3.1'
