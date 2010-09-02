@@ -22,7 +22,7 @@ request = test1.wrap(HTTPRequest())
 # Test Interface
 class TestRunner:
 	def __call__(self):
-		grinder.sleep(100,0)
+		grinder.sleep(30*grinder.threadNumber,0)
 		log("Connecting " )
 		print grinder.threadNumber
 		result = request.GET("%s/%s" % (URL, RESOURCE))

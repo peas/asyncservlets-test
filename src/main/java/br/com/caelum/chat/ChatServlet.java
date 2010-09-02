@@ -71,6 +71,6 @@ public class ChatServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
 		System.out.println("sending message para " + clientes);
-		messages.add(String.format("mensagem %d %n", contador));
+		messages.add(String.format("mensagem %d %n", contador++));
 	}
 }

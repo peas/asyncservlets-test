@@ -5,7 +5,7 @@
 <Configure id='xpto' class="org.eclipse.jetty.webapp.WebAppContext">
 
 	<Set name="contextPath">/asyncservlets-test</Set>
-	<Set name="war"><SystemProperty name="jetty.home" default="." />/build/libs/asyncservlets.war</Set>
+	<Set name="war"><SystemProperty name="jetty.home" default="." />/build/libs/asyncservlets-test.war</Set>
 	<Set name="configurationDiscovered">true</Set>
 
 </Configure>
