@@ -1,33 +1,3 @@
-/*
- * $HeadURL$
- * $Revision$
- * $Date$
- *
- * ====================================================================
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
- */
 package br.com.caelum.paulo.niohttptester;
 
 import java.io.IOException;
@@ -66,17 +36,7 @@ import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
 import org.apache.http.util.EntityUtils;
 
-/**
- * Elemental example for executing HTTP requests using the non-blocking I/O
- * model.
- * <p>
- * Please note the purpose of this application is demonstrate the usage of
- * HttpCore APIs. It is NOT intended to demonstrate the most efficient way of
- * building an HTTP client.
- * 
- * 
- * @version $Revision$
- */
+
 public class NHttpClient {
 
 	public static void main(String[] args) throws Exception {
@@ -91,10 +51,13 @@ public class NHttpClient {
 				.setParameter(CoreProtocolPNames.USER_AGENT,
 						"Testador do Paulo MegaBrowser");
 
+		// duas threads pro reator... demorou com elas vai dançar.
 		final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(2,
 				params);
 
 		BasicHttpProcessor httpproc = new BasicHttpProcessor();
+		
+		// talvez vc nao precise de todos eles:
 		httpproc.addInterceptor(new RequestContent());
 		httpproc.addInterceptor(new RequestTargetHost());
 		httpproc.addInterceptor(new RequestConnControl());
@@ -118,6 +81,7 @@ public class NHttpClient {
 
 			public void run() {
 				try {
+					// esse cara segura a thread daqui eqto nao for desligado
 					ioReactor.execute(ioEventDispatch);
 				} catch (InterruptedIOException ex) {
 					System.err.println("Interrupted");
@@ -209,6 +173,8 @@ public class NHttpClient {
 				System.out.println(response.getStatusLine());
 				System.out.println("--------------");
 				System.out.println("Document length: " + content.length());
+				
+				
 				System.out.println("--------------");
 			} catch (IOException ex) {
 				System.err.println("I/O error: " + ex.getMessage());
