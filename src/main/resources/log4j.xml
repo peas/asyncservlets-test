@@ -10,14 +10,8 @@
 	</appender>
 
 
-	<category name="br.com.caelum.vraptor">
+	<category name="br.com.caelum">
 		<priority value="INFO" />
-		<appender-ref ref="main" />
-	</category>
-
-
-	<category name="org.vraptor">
-		<priority value="WARN" />
 		<appender-ref ref="main" />
 	</category>
 
