@@ -1,7 +1,9 @@
 package br.com.caelum.chat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
@@ -44,7 +46,7 @@ public class NHttpClient {
 
 	public static void main(String[] args) throws Exception {
 		HttpParams params = new BasicHttpParams();
-		params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
+		params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 50000)
 				.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000)
 				.setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE,
 						8 * 1024)
@@ -67,8 +69,8 @@ public class NHttpClient {
 		httpproc.addInterceptor(new RequestUserAgent());
 		httpproc.addInterceptor(new RequestExpectContinue());
 
-		AsyncNHttpClientHandler handler = new AsyncNHttpClientHandler(
-				httpproc, new MyHttpRequestExecutionHandler(),
+		AsyncNHttpClientHandler handler = new AsyncNHttpClientHandler(httpproc,
+				new MyHttpRequestExecutionHandler(),
 				new DefaultConnectionReuseStrategy(), params);
 
 		handler.setEventListener(new EventLogger());
@@ -93,8 +95,7 @@ public class NHttpClient {
 
 		for (int i = 0; i < 10; i++) {
 			ioReactor.connect(new InetSocketAddress("www.yahoo.com", 80), null,
-					new HttpHost("www.yahoo.com"),
-					new TesterSessionCallback());
+					new HttpHost("www.yahoo.com"), new TesterSessionCallback());
 		}
 
 		// ioReactor.shutdown();
@@ -102,13 +103,10 @@ public class NHttpClient {
 
 }
 
+class MyHttpRequestExecutionHandler implements NHttpRequestExecutionHandler {
 
-
-
-class MyHttpRequestExecutionHandler implements
-		NHttpRequestExecutionHandler {
-
-	private static Logger log = Logger.getLogger(MyHttpRequestExecutionHandler.class);
+	private static Logger log = Logger
+			.getLogger(MyHttpRequestExecutionHandler.class);
 
 	private final static String REQUEST_SENT = "request-sent";
 	private final static String RESPONSE_RECEIVED = "response-received";
@@ -141,19 +139,19 @@ class MyHttpRequestExecutionHandler implements
 		}
 	}
 
-	public void handleResponse( HttpResponse response,
-			 HttpContext context) {
+	public void handleResponse(HttpResponse response, HttpContext context) {
 		HttpEntity entity = response.getEntity();
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
-			entity.
-			String content = EntityUtils.toString(entity);
-			log.info("Dados: " + content);
-
-			System.out.println("--------------");
-		} catch (IOException ex) {
-			log.error("I/O error: ", ex);
+			
+			entity.consumeContent();
+			entity.writeTo(stream);
+			String s = new String(stream.toByteArray());
+			log.info("Dados: " + entity.isStreaming());
+		} catch (IOException e) {
+			log.info("problema ", e);
 		}
-
 		context.setAttribute(RESPONSE_RECEIVED, Boolean.TRUE);
 
 		// aqui chegou uma parte.
@@ -162,7 +160,23 @@ class MyHttpRequestExecutionHandler implements
 	@Override
 	public ConsumingNHttpEntity responseEntity(HttpResponse response,
 			HttpContext context) throws IOException {
-		
+
+		log.info(response);
+
+		HttpEntity entity = response.getEntity();
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		try {
+			
+			//entity.consumeContent();
+			entity.writeTo(stream);
+			String s = new String(stream.toByteArray());
+			log.info("Dados: " + entity.isStreaming());
+		} catch (IOException e) {
+			log.info("problema ", e);
+		}
+		context.setAttribute(RESPONSE_RECEIVED, Boolean.TRUE);
+
 		return null;
 	}
 
@@ -170,8 +184,7 @@ class MyHttpRequestExecutionHandler implements
 
 class TesterSessionCallback implements SessionRequestCallback {
 
-	private static Logger log = Logger
-			.getLogger(TesterSessionCallback.class);
+	private static Logger log = Logger.getLogger(TesterSessionCallback.class);
 
 	public void cancelled(final SessionRequest request) {
 		log.info("cancelled: " + request);
