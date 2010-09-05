@@ -47,6 +47,9 @@ import org.apache.log4j.Logger;
 
 public class NHttpClient {
 
+	private static final int PORT = 80;
+	private static final String HOST_NAME = "www.paulo.com.br";
+	private static final String URI = "/";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
 	public static void main(String[] args) throws Exception {
@@ -75,7 +78,7 @@ public class NHttpClient {
 		httpproc.addInterceptor(new RequestExpectContinue());
 
 		AsyncNHttpClientHandler handler = new AsyncNHttpClientHandler(httpproc,
-				new HandlerExecucaoAssincrono(),
+				new HandlerExecucaoAssincrono(URI),
 				new DefaultConnectionReuseStrategy(), params);
 
 		handler.setEventListener(new EventLogger());
@@ -99,7 +102,7 @@ public class NHttpClient {
 		});
 
 		for (int i = 0; i < 10; i++) {
-			ioReactor.connect(new InetSocketAddress("www.paulo.com.br", 80),
+			ioReactor.connect(new InetSocketAddress(HOST_NAME, PORT),
 					null, null, new TesterSessionCallback());
 		}
 
@@ -114,6 +117,12 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 			.getLogger(HandlerExecucaoAssincrono.class);
 
 	private static final String DONE_FLAG = "done";
+
+	private String uri;
+	
+	public HandlerExecucaoAssincrono(String uri) {
+		this.uri = uri;
+	}
 
 	public void initalizeContext(final HttpContext context,
 			final Object attachment) {
@@ -135,7 +144,7 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 					targetHost));
 			context.setAttribute(DONE_FLAG, true);
 
-			return new BasicHttpRequest("GET", "/");
+			return new BasicHttpRequest("GET", uri);
 		} else {
 			return null;
 		}
