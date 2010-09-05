@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.util.concurrent.Executors;
 
 import org.apache.http.HttpEntity;
@@ -15,9 +16,13 @@ import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.nio.ContentDecoder;
+import org.apache.http.nio.ContentDecoderChannel;
+import org.apache.http.nio.IOControl;
 import org.apache.http.nio.NHttpConnection;
-import org.apache.http.nio.entity.BufferingNHttpEntity;
 import org.apache.http.nio.entity.ConsumingNHttpEntity;
+import org.apache.http.nio.entity.ConsumingNHttpEntityTemplate;
+import org.apache.http.nio.entity.ContentListener;
 import org.apache.http.nio.protocol.AsyncNHttpClientHandler;
 import org.apache.http.nio.protocol.EventListener;
 import org.apache.http.nio.protocol.NHttpRequestExecutionHandler;
@@ -57,7 +62,7 @@ public class NHttpClient {
 						"Testador do Paulo MegaBrowser");
 
 		// duas threads pro reator... demorou com elas vai dançar.
-		final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(2,
+		final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(1,
 				params);
 
 		BasicHttpProcessor httpproc = new BasicHttpProcessor();
@@ -93,9 +98,9 @@ public class NHttpClient {
 
 		});
 
-		for (int i = 0; i < 1; i++) {
-			ioReactor.connect(new InetSocketAddress("127.0.0.1/asyncservlets-test/subscribe", 8080), null,
-					null, new TesterSessionCallback());
+		for (int i = 0; i < 10; i++) {
+			ioReactor.connect(new InetSocketAddress("www.paulo.com.br", 80),
+					null, null, new TesterSessionCallback());
 		}
 
 		// ioReactor.shutdown();
@@ -107,7 +112,6 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 
 	private static Logger log = Logger
 			.getLogger(HandlerExecucaoAssincrono.class);
-
 
 	private static final String DONE_FLAG = "done";
 
@@ -140,25 +144,41 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 	public void handleResponse(HttpResponse response, HttpContext context) {
 		HttpEntity entity = response.getEntity();
 
-		try {
-			log.info("Entidade: " + entity);
-		
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			entity.writeTo(baos);
-			log.info("Dados" + new String(baos.toByteArray()));
-		} catch (IOException e) {
-			log.info("problema ", e);
-		}
+		log.info("Entidade: " + entity);
 	}
 
 	@Override
 	public ConsumingNHttpEntity responseEntity(HttpResponse response,
 			HttpContext context) throws IOException {
 
-		log.info("Criando etnidade para " + response.getEntity());
-		return new BufferingNHttpEntity(response.getEntity(),
-				new HeapByteBufferAllocator());
+		ContentListener listener = new ContentListener() {
+
+			@Override
+			public void finished() {
+
+			}
+
+			@Override
+			public void contentAvailable(ContentDecoder decoder,
+					IOControl ioctrl) throws IOException {
+				ByteBuffer buffer = ByteBuffer.allocate(10 * 1024);
+
+				ContentDecoderChannel c = new ContentDecoderChannel(decoder);
+				int read = c.read(buffer);
+				log.info("lido " + read);
+				log.info("conteudo" + new String(buffer.array()));
+			}
+		};
+		return new ConsumingNHttpEntityTemplate(response.getEntity(), listener);
 	}
+
+	/*
+	 * public ConsumingNHttpEntity responseEntity(HttpResponse response,
+	 * HttpContext context) throws IOException {
+	 * 
+	 * return new BufferingNHttpEntity(response.getEntity(), new
+	 * HeapByteBufferAllocator()); }
+	 */
 
 }
 
