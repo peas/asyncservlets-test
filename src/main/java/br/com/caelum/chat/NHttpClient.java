@@ -3,7 +3,6 @@ package br.com.caelum.chat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
@@ -17,6 +16,7 @@ import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.nio.NHttpConnection;
+import org.apache.http.nio.entity.BufferingNHttpEntity;
 import org.apache.http.nio.entity.ConsumingNHttpEntity;
 import org.apache.http.nio.protocol.AsyncNHttpClientHandler;
 import org.apache.http.nio.protocol.EventListener;
@@ -25,6 +25,7 @@ import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOEventDispatch;
 import org.apache.http.nio.reactor.SessionRequest;
 import org.apache.http.nio.reactor.SessionRequestCallback;
+import org.apache.http.nio.util.HeapByteBufferAllocator;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
@@ -37,7 +38,6 @@ import org.apache.http.protocol.RequestContent;
 import org.apache.http.protocol.RequestExpectContinue;
 import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 public class NHttpClient {
@@ -70,7 +70,7 @@ public class NHttpClient {
 		httpproc.addInterceptor(new RequestExpectContinue());
 
 		AsyncNHttpClientHandler handler = new AsyncNHttpClientHandler(httpproc,
-				new MyHttpRequestExecutionHandler(),
+				new HandlerExecucaoAssincrono(),
 				new DefaultConnectionReuseStrategy(), params);
 
 		handler.setEventListener(new EventLogger());
@@ -93,9 +93,9 @@ public class NHttpClient {
 
 		});
 
-		for (int i = 0; i < 10; i++) {
-			ioReactor.connect(new InetSocketAddress("www.yahoo.com", 80), null,
-					new HttpHost("www.yahoo.com"), new TesterSessionCallback());
+		for (int i = 0; i < 1; i++) {
+			ioReactor.connect(new InetSocketAddress("127.0.0.1/asyncservlets-test/subscribe", 8080), null,
+					null, new TesterSessionCallback());
 		}
 
 		// ioReactor.shutdown();
@@ -103,13 +103,13 @@ public class NHttpClient {
 
 }
 
-class MyHttpRequestExecutionHandler implements NHttpRequestExecutionHandler {
+class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 
 	private static Logger log = Logger
-			.getLogger(MyHttpRequestExecutionHandler.class);
+			.getLogger(HandlerExecucaoAssincrono.class);
 
-	private final static String REQUEST_SENT = "request-sent";
-	private final static String RESPONSE_RECEIVED = "response-received";
+
+	private static final String DONE_FLAG = "done";
 
 	public void initalizeContext(final HttpContext context,
 			final Object attachment) {
@@ -118,23 +118,21 @@ class MyHttpRequestExecutionHandler implements NHttpRequestExecutionHandler {
 	}
 
 	public void finalizeContext(final HttpContext context) {
-		Object flag = context.getAttribute(RESPONSE_RECEIVED);
-		if (flag == null) {
-			// aqui temrinou requisicao
-		}
+		context.removeAttribute(DONE_FLAG);
+		log.info(String.format("finalizado "));
 	}
 
 	public HttpRequest submitRequest(final HttpContext context) {
-		HttpHost targetHost = (HttpHost) context
-				.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-		Object flag = context.getAttribute(REQUEST_SENT);
-		if (flag == null) {
-			context.setAttribute(REQUEST_SENT, Boolean.TRUE);
-			log.info("Sending request to " + targetHost);
+		Object done = context.getAttribute(DONE_FLAG);
+		if (done == null) {
+			HttpHost targetHost = (HttpHost) context
+					.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+			log.info(String.format("Sending request %s to %s ", context,
+					targetHost));
+			context.setAttribute(DONE_FLAG, true);
 
 			return new BasicHttpRequest("GET", "/");
 		} else {
-			// ja foi, ta enviando headers
 			return null;
 		}
 	}
@@ -142,42 +140,24 @@ class MyHttpRequestExecutionHandler implements NHttpRequestExecutionHandler {
 	public void handleResponse(HttpResponse response, HttpContext context) {
 		HttpEntity entity = response.getEntity();
 
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		try {
-			
-			entity.consumeContent();
-			entity.writeTo(stream);
-			String s = new String(stream.toByteArray());
-			log.info("Dados: " + entity.isStreaming());
+			log.info("Entidade: " + entity);
+		
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			entity.writeTo(baos);
+			log.info("Dados" + new String(baos.toByteArray()));
 		} catch (IOException e) {
 			log.info("problema ", e);
 		}
-		context.setAttribute(RESPONSE_RECEIVED, Boolean.TRUE);
-
-		// aqui chegou uma parte.
 	}
 
 	@Override
 	public ConsumingNHttpEntity responseEntity(HttpResponse response,
 			HttpContext context) throws IOException {
 
-		log.info(response);
-
-		HttpEntity entity = response.getEntity();
-
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		try {
-			
-			//entity.consumeContent();
-			entity.writeTo(stream);
-			String s = new String(stream.toByteArray());
-			log.info("Dados: " + entity.isStreaming());
-		} catch (IOException e) {
-			log.info("problema ", e);
-		}
-		context.setAttribute(RESPONSE_RECEIVED, Boolean.TRUE);
-
-		return null;
+		log.info("Criando etnidade para " + response.getEntity());
+		return new BufferingNHttpEntity(response.getEntity(),
+				new HeapByteBufferAllocator());
 	}
 
 }
