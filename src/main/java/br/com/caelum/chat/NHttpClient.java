@@ -45,15 +45,17 @@ import org.apache.log4j.Logger;
 
 public class NHttpClient {
 
-	private static final int PORT = 80;
-	private static final String HOST_NAME = "google.com";
-	private static final String URI = "/";
+	private static final int NUMBER_OF_REQUESTS = 3;
+	private static final int DELAY_BETWEEN_REQUESTS = 10;
+	private static final int PORT = 8080;
+	private static final String HOST_NAME = "127.0.0.1";
+	private static final String URI = "/asyncservlets/subscribe";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
 	public static void main(String[] args) throws Exception {
 		HttpParams params = new BasicHttpParams();
-		params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 50000)
-				.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000)
+		params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 3000000)
+				.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 3000000)
 				.setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE,
 						8 * 1024)
 				.setBooleanParameter(
@@ -99,9 +101,10 @@ public class NHttpClient {
 
 		});
 
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < NUMBER_OF_REQUESTS; i++) {
 			ioReactor.connect(new InetSocketAddress(HOST_NAME, PORT),
 					null, null, new TesterSessionCallback());
+			Thread.sleep(DELAY_BETWEEN_REQUESTS);
 		}
 
 		// ioReactor.shutdown();

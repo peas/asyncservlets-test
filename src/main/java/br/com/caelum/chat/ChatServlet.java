@@ -64,13 +64,13 @@ public class ChatServlet extends HttpServlet {
 		AsyncContext ctx = req.startAsync();
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
-		System.out.println("novo cliente " + clientes.incrementAndGet());
+		System.out.println("new client. id: " + clientes.incrementAndGet());
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
-		System.out.println("sending message para " + clientes);
-		messages.add(String.format("mensagem %d %n", contador++));
+		System.out.println("sending message to  " + clientes + " clients");
+		messages.add(String.format("message number %d %n", contador++));
 	}
 }
