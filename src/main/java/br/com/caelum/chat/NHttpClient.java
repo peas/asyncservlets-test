@@ -1,6 +1,5 @@
 package br.com.caelum.chat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
@@ -30,7 +29,6 @@ import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOEventDispatch;
 import org.apache.http.nio.reactor.SessionRequest;
 import org.apache.http.nio.reactor.SessionRequestCallback;
-import org.apache.http.nio.util.HeapByteBufferAllocator;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
@@ -48,7 +46,7 @@ import org.apache.log4j.Logger;
 public class NHttpClient {
 
 	private static final int PORT = 80;
-	private static final String HOST_NAME = "www.paulo.com.br";
+	private static final String HOST_NAME = "canrailsscale.com";
 	private static final String URI = "/";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
@@ -101,7 +99,7 @@ public class NHttpClient {
 
 		});
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			ioReactor.connect(new InetSocketAddress(HOST_NAME, PORT),
 					null, null, new TesterSessionCallback());
 		}
@@ -117,6 +115,7 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 			.getLogger(HandlerExecucaoAssincrono.class);
 
 	private static final String DONE_FLAG = "done";
+	private static final String ENTITY_RECEIVED = "received";
 
 	private String uri;
 	
@@ -153,29 +152,36 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 	public void handleResponse(HttpResponse response, HttpContext context) {
 		HttpEntity entity = response.getEntity();
 
-		log.info("Entidade: " + entity);
+		//log.info("Entidade: " + entity);
 	}
 
 	@Override
 	public ConsumingNHttpEntity responseEntity(HttpResponse response,
-			HttpContext context) throws IOException {
+			final HttpContext context) throws IOException {
 
+		if (context.getAttribute(ENTITY_RECEIVED) != null) return null;
+
+		
 		ContentListener listener = new ContentListener() {
 
 			@Override
 			public void finished() {
-
+				context.setAttribute(ENTITY_RECEIVED, null);
 			}
 
 			@Override
 			public void contentAvailable(ContentDecoder decoder,
 					IOControl ioctrl) throws IOException {
+				context.setAttribute(ENTITY_RECEIVED, true);
+				
+				
 				ByteBuffer buffer = ByteBuffer.allocate(10 * 1024);
 
 				ContentDecoderChannel c = new ContentDecoderChannel(decoder);
 				int read = c.read(buffer);
-				log.info("lido " + read);
-				log.info("conteudo" + new String(buffer.array()));
+				log.info("bytes lido " + read);
+				// TODO: acertar encoding
+				log.info("conteudo total " + new String(buffer.array()).length());
 			}
 		};
 		return new ConsumingNHttpEntityTemplate(response.getEntity(), listener);
