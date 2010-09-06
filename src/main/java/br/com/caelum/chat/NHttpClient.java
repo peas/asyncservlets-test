@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 
 public class NHttpClient {
 
-	private static final int NUMBER_OF_REQUESTS = 3;
+	private static final int NUMBER_OF_REQUESTS = 2000;
 	private static final int DELAY_BETWEEN_REQUESTS = 10;
 	private static final int PORT = 8080;
 	private static final String HOST_NAME = "127.0.0.1";
@@ -182,12 +182,11 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 
 				ContentDecoderChannel c = new ContentDecoderChannel(decoder);
 				int read = c.read(buffer);
-				
+
 				log.info("total readl in bytes: " + read);
 				// TODO: acertar encoding
 				
-				buffer.
-				log.info("first 100 characters: " + new String(buffer.array()).substring(100));
+				log.info("first 100 characters: " + new String(buffer.array(), 0, read).substring(100));
 			}
 		};
 		return new ConsumingNHttpEntityTemplate(response.getEntity(), listener);
