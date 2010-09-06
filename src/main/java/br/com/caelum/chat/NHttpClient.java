@@ -182,9 +182,12 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 
 				ContentDecoderChannel c = new ContentDecoderChannel(decoder);
 				int read = c.read(buffer);
-				log.info("bytes lido " + read);
+				
+				log.info("total readl in bytes: " + read);
 				// TODO: acertar encoding
-				log.info("conteudo total " + new String(buffer.array()).length());
+				
+				buffer.
+				log.info("first 100 characters: " + new String(buffer.array()).substring(100));
 			}
 		};
 		return new ConsumingNHttpEntityTemplate(response.getEntity(), listener);
