@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 public class NHttpClient {
 
 	private static final int PORT = 80;
-	private static final String HOST_NAME = "canrailsscale.com";
+	private static final String HOST_NAME = "google.com";
 	private static final String URI = "/";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
