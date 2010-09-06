@@ -49,7 +49,7 @@ public class NHttpClient {
 	private static final int DELAY_BETWEEN_REQUESTS = 10;
 	private static final int PORT = 8080;
 	private static final String HOST_NAME = "127.0.0.1";
-	private static final String URI = "/asyncservlets/subscribe";
+	private static final String URI = "/asyncservlets-test/subscribe";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
 	public static void main(String[] args) throws Exception {
@@ -64,7 +64,7 @@ public class NHttpClient {
 				.setParameter(CoreProtocolPNames.USER_AGENT,
 						"Testador do Paulo MegaBrowser");
 
-		// duas threads pro reator... demorou com elas vai dançar.
+		// duas threads pro reator... demorou com elas vai dan√ßar.
 		final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(1,
 				params);
 
@@ -102,6 +102,7 @@ public class NHttpClient {
 		});
 
 		for (int i = 0; i < NUMBER_OF_REQUESTS; i++) {
+			// TODO: passar I como ID para cada sessioncallback (e ate context como attach)
 			ioReactor.connect(new InetSocketAddress(HOST_NAME, PORT),
 					null, null, new TesterSessionCallback());
 			Thread.sleep(DELAY_BETWEEN_REQUESTS);
@@ -186,7 +187,8 @@ class HandlerExecucaoAssincrono implements NHttpRequestExecutionHandler {
 				log.info("total readl in bytes: " + read);
 				// TODO: acertar encoding
 				
-				log.info("first 100 characters: " + new String(buffer.array(), 0, read).substring(100));
+				String value = new String(buffer.array(), 0, read);
+				log.info("first 100 characters: " + value.substring(0, Math.min(100, value.length())));
 			}
 		};
 		return new ConsumingNHttpEntityTemplate(response.getEntity(), listener);
