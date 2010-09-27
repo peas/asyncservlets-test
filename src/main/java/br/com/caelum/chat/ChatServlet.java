@@ -1,6 +1,6 @@
 package br.com.caelum.chat;
 
-import java.io.IOException;	
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -27,7 +27,6 @@ public class ChatServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		final ExecutorService executors = Executors.newCachedThreadPool();
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			public void run() {
 				while (true) {
@@ -35,19 +34,15 @@ public class ChatServlet extends HttpServlet {
 						final String message = messages.take();
 
 						for (final AsyncContext ctx : clients) {
-							executors.execute(new Runnable() {
-								public void run() {
-									try {
-										PrintWriter writer = ctx.getResponse()
-												.getWriter();
-										writer.println(message);
-										writer.flush();
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-								}
+							try {
+								PrintWriter writer = ctx.getResponse()
+										.getWriter();
+								writer.println(message);
+								writer.flush();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 
-							});
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -70,7 +65,9 @@ public class ChatServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
-		System.out.println("enviando mensagem para   " + clientes + " clientes");
-		messages.add(String.format("mensagem número %d %n", contador.incrementAndGet()));
+		System.out
+				.println("enviando mensagem para   " + clientes + " clientes");
+		messages.add(String.format("mensagem número %d %n",
+				contador.incrementAndGet()));
 	}
 }
