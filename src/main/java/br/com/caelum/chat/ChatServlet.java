@@ -1,6 +1,6 @@
 package br.com.caelum.chat;
 
-import java.io.IOException;
+import java.io.IOException;	
 import java.io.PrintWriter;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -22,7 +22,7 @@ public class ChatServlet extends HttpServlet {
 
 	private Queue<AsyncContext> clients = new ConcurrentLinkedQueue<AsyncContext>();
 	private BlockingQueue<String> messages = new LinkedBlockingQueue<String>();
-	private int contador;
+	private AtomicInteger contador = new AtomicInteger();
 	private AtomicInteger clientes = new AtomicInteger();
 
 	@Override
@@ -64,13 +64,13 @@ public class ChatServlet extends HttpServlet {
 		AsyncContext ctx = req.startAsync();
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
-		System.out.println("new client. id: " + clientes.incrementAndGet());
+		System.out.println("novo cliente. id: " + clientes.incrementAndGet());
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse arg1)
 			throws ServletException, IOException {
-		System.out.println("sending message to  " + clientes + " clients");
-		messages.add(String.format("message number %d %n", contador++));
+		System.out.println("enviando mensagem para   " + clientes + " clientes");
+		messages.add(String.format("mensagem número %d %n", contador.incrementAndGet()));
 	}
 }

@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-	tomcat ('org.apache.tomcat:tomcat-catalina:7.0.2') {transitive=false}
+	tomcat ('org.apache.tomcat:tomcat-catalina:7.0.2') 
 	tomcat 'org.apache.tomcat.embed:tomcat-embed-core:7.0.2'
 	tomcat ('org.apache.tomcat:tomcat-jasper:7.0.2') {
         	exclude group:'org.eclipse.jdt', name:'ecj',version:'3.6'
@@ -70,7 +70,7 @@ dependencies {
 
 task runJetty8(type: JavaExec, dependsOn: build) {
 	classpath configurations.jetty
-	classpath configurations.runtime
+//	classpath configurations.runtime
 	args '--ini=etc/start.ini'	
 	jvmArgs '-Xmx800M','-Xss100K'
 	main = 'org.eclipse.jetty.start.Main'
@@ -79,8 +79,8 @@ task runJetty8(type: JavaExec, dependsOn: build) {
 
 task runTomcat7(type: JavaExec, dependsOn: build) {
 	classpath configurations.tomcat
-	classpath configurations.runtime
-	jvmArgs '-Xmx800M','-Xss100K'
+//	classpath configurations.runtime
+	jvmArgs '-Xmx1500M','-Xss100K', '-XX:+AggressiveOpts'
 	main = 'org.apache.catalina.startup.Bootstrap'
 }
 

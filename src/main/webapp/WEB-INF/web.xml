@@ -13,6 +13,18 @@
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
+
+<servlet>
+    <servlet-name>noop</servlet-name>
+    <servlet-class>br.com.caelum.chat.NoopServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+      
+  <servlet-mapping>
+    <servlet-name>noop</servlet-name>
+    <url-pattern>/noop</url-pattern>
+  </servlet-mapping>
       
   <servlet-mapping>
     <servlet-name>sub</servlet-name>
