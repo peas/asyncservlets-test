@@ -1,4 +1,4 @@
-package br.com.caelum.chat;
+package br.com.caelum;
 
 import java.io.IOException;
 import java.io.PrintWriter;

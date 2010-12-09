@@ -1,4 +1,4 @@
-package br.com.caelum.chat;
+package br.com.caelum;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 public class NHttpClient {
 
 	private static final int NUMBER_OF_REQUESTS = 1000;
-	private static final int DELAY_BETWEEN_REQUESTS = 10;
+	private static final int DELAY_BETWEEN_REQUESTS = 8;
 	private static final int PORT = 8080;
 	private static final String HOST_NAME = "127.0.0.1";
 	private static final String URI = "/asyncservlets-test/subscribe";

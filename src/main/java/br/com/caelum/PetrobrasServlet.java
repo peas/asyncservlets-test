@@ -1,4 +1,4 @@
-package br.com.caelum.chat;
+package br.com.caelum;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,10 +27,13 @@ public class PetrobrasServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
+			// nosso reactor
 			public void run() {
 				while (true) {
-					try {
+
+					try {	
 						String message = messages.take();
+						// nao pode ter nada blocante depois daqui!
 						for (AsyncContext ctx : clients) {
 							PrintWriter writer = ctx.getResponse().getWriter();
 							writer.println(message);

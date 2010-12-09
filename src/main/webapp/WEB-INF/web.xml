@@ -10,21 +10,21 @@
 
 <servlet>
     <servlet-name>petrAntigo</servlet-name>
-    <servlet-class>br.com.caelum.chat.PetrobrasAntigoServlet</servlet-class>
+    <servlet-class>br.com.caelum.PetrobrasAntigoServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
 
 <servlet>
     <servlet-name>petr</servlet-name>
-    <servlet-class>br.com.caelum.chat.PetrobrasServlet</servlet-class>
+    <servlet-class>br.com.caelum.PetrobrasServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
 
 <servlet>
     <servlet-name>noop</servlet-name>
-    <servlet-class>br.com.caelum.chat.NoopServlet</servlet-class>
+    <servlet-class>br.com.caelum.NoopServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
