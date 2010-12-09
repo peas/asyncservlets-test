@@ -30,20 +30,13 @@ public class PetrobrasServlet extends HttpServlet {
 			public void run() {
 				while (true) {
 					try {
-						final String message = messages.take();
-
-						for (final AsyncContext ctx : clients) {
-							try {
-								PrintWriter writer = ctx.getResponse()
-										.getWriter();
-								writer.println(message);
-								writer.flush();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-
+						String message = messages.take();
+						for (AsyncContext ctx : clients) {
+							PrintWriter writer = ctx.getResponse().getWriter();
+							writer.println(message);
+							writer.flush();
 						}
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -59,7 +52,7 @@ public class PetrobrasServlet extends HttpServlet {
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
 		System.out.println("novo cliente. id: " + clientes.incrementAndGet());
-		
+
 		// thread será liberada!!!!
 	}
 
@@ -68,7 +61,7 @@ public class PetrobrasServlet extends HttpServlet {
 			throws ServletException, IOException {
 		System.out
 				.println("enviando mensagem para   " + clientes + " clientes");
-		
+
 		messages.add(String.format("novo valor PETR4: %d %n",
 				contador.incrementAndGet()));
 	}

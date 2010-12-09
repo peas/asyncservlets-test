@@ -40,7 +40,6 @@ public class PetrobrasAntigoServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
-
 	}
 
 	@Override
