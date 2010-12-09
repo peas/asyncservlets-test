@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@WebServlet(urlPatterns="/subscribe", loadOnStartup=1, asyncSupported=true)
 public class PetrobrasServlet extends HttpServlet {
 
 	private Queue<AsyncContext> clients = new ConcurrentLinkedQueue<AsyncContext>();

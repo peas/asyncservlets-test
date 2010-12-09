@@ -9,10 +9,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@WebServlet(urlPatterns="/subscribeAntigo",loadOnStartup=1)
 public class PetrobrasAntigoServlet extends HttpServlet {
 
 	private AtomicInteger valor = new AtomicInteger();
@@ -46,9 +48,9 @@ public class PetrobrasAntigoServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse response)
 			throws ServletException, IOException {
 		System.out
-				.println("enviando mensagem para   " + clientes + " clientes");
+				.println("[antigo] enviando mensagem para   " + clientes + " clientes");
 
-		String mensagem =  String.format("novo valor PETR4 %d %n", valor.incrementAndGet());
+		String mensagem =  String.format("[antigo] novo valor PETR4 %d %n", valor.incrementAndGet());
 
 		for (BlockingQueue<String> queue : clients) {
 			queue.add(mensagem);
