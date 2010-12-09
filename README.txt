@@ -13,8 +13,8 @@ and then
 gradle runGrinder
 
 to be able to see some action from the command line:
-curl http://127.0.0.1/asyncservlets-test/subscribe
+curl http://127.0.0.1:8080/asyncservlets-test/subscribe
 
 To broadcast a message to every single client connected
-curl http://127.0.0.1/asyncservlets-test/subscribe -danything
+curl http://127.0.0.1:8080/asyncservlets-test/subscribe -danything
 

@@ -17,8 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = { "/subscribe" }, asyncSupported = true, loadOnStartup = 1)
-public class ChatServlet extends HttpServlet {
+public class PetrobrasServlet extends HttpServlet {
 
 	private Queue<AsyncContext> clients = new ConcurrentLinkedQueue<AsyncContext>();
 	private BlockingQueue<String> messages = new LinkedBlockingQueue<String>();
@@ -60,6 +59,8 @@ public class ChatServlet extends HttpServlet {
 		ctx.setTimeout(3000000);
 		clients.add(ctx);
 		System.out.println("novo cliente. id: " + clientes.incrementAndGet());
+		
+		// thread será liberada!!!!
 	}
 
 	@Override
@@ -67,7 +68,8 @@ public class ChatServlet extends HttpServlet {
 			throws ServletException, IOException {
 		System.out
 				.println("enviando mensagem para   " + clientes + " clientes");
-		messages.add(String.format("mensagem número %d %n",
+		
+		messages.add(String.format("novo valor PETR4: %d %n",
 				contador.incrementAndGet()));
 	}
 }

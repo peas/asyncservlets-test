@@ -49,7 +49,7 @@ public class NHttpClient {
 	private static final int DELAY_BETWEEN_REQUESTS = 10;
 	private static final int PORT = 8080;
 	private static final String HOST_NAME = "127.0.0.1";
-	private static final String URI = "/asyncservlets-test/subscribe";
+	private static final String URI = "/asyncservlets-test/subscribeAntigo";
 	private static Logger log = Logger.getLogger(NHttpClient.class);
 
 	public static void main(String[] args) throws Exception {

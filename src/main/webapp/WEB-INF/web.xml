@@ -7,9 +7,17 @@
   version="3.0"
 >
 
+
 <servlet>
-    <servlet-name>sub</servlet-name>
-    <servlet-class>br.com.caelum.chat.ChatServlet</servlet-class>
+    <servlet-name>petrAntigo</servlet-name>
+    <servlet-class>br.com.caelum.chat.PetrobrasAntigoServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+
+<servlet>
+    <servlet-name>petr</servlet-name>
+    <servlet-class>br.com.caelum.chat.PetrobrasServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>
@@ -27,8 +35,13 @@
   </servlet-mapping>
       
   <servlet-mapping>
-    <servlet-name>sub</servlet-name>
+    <servlet-name>petr</servlet-name>
     <url-pattern>/subscribe</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>petrAntigo</servlet-name>
+    <url-pattern>/subscribeAntigo</url-pattern>
   </servlet-mapping>
 
 </web-app>

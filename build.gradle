@@ -72,7 +72,7 @@ task runJetty8(type: JavaExec, dependsOn: build) {
 	classpath configurations.jetty
 //	classpath configurations.runtime
 	args '--ini=etc/start.ini'	
-	jvmArgs '-Xmx800M','-Xss100K'
+//	jvmArgs '-Xmx800M','-Xss100K'
 	main = 'org.eclipse.jetty.start.Main'
 }
 
@@ -80,7 +80,7 @@ task runJetty8(type: JavaExec, dependsOn: build) {
 task runTomcat7(type: JavaExec, dependsOn: build) {
 	classpath configurations.tomcat
 //	classpath configurations.runtime
-	jvmArgs '-Xmx1500M','-Xss100K', '-XX:+AggressiveOpts'
+//	jvmArgs '-Xmx1500M', '-XX:+AggressiveOpts' // ,'-Xss100K'
 	main = 'org.apache.catalina.startup.Bootstrap'
 }
 
